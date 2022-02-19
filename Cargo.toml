@@ -1,0 +1,23 @@
+[package]
+edition = "2021"
+name = "tmux-status-tracker"
+version = "1.0"
+description = "a small cli for saving and retrieving git informatio for tmus status bars"
+license = "MIT"
+documentation = "https://git.themarshians.com/icub3d/tmux-status-tracker"
+homepage = "https://git.themarshians.com/icub3d/tmux-status-tracker"
+
+
+[dependencies]
+bincode = "1.3.3"
+dirs = "4.0.0"
+serde_json = "*"
+sled = "0.34.7"
+
+[dependencies.clap]
+features = ["derive"]
+version = "3.1.0"
+
+[dependencies.serde]
+features = ["derive"]
+version = "1.0"
