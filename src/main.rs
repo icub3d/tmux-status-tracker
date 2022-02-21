@@ -27,12 +27,12 @@ struct PutCommand {
     path: String,
 
     /// The git branch, if any.
-    #[clap(short, long)]
-    branch: Option<String>,
+    #[clap(short, long, default_value = "")]
+    branch: String,
 
     /// The git status (-sb), if any.
-    #[clap(short, long)]
-    git_status: Option<String>,
+    #[clap(short, long, default_value = "")]
+    git_status: String,
 }
 
 #[derive(Parser, Debug)]
@@ -105,11 +105,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
     match &cli.command {
         Commands::Put(p) => {
-            let status = Status::new(
-                &p.path,
-                &p.branch.clone().unwrap_or_else(|| "".to_string()),
-                &p.git_status.clone().unwrap_or_else(|| "".to_string()),
-            );
+            let status = Status::new(&p.path, &p.branch, &p.git_status);
             db.update(status)?;
         }
         Commands::Get(g) => {
