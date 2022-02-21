@@ -55,12 +55,11 @@ impl Status {
             path: path.to_string(),
             branch: branch.to_string(),
             git_status: git_status
-                .split('\n')
+                .split('|')
                 .filter(|s| !s.is_empty())
                 .map(|s| {
-                    dbg!(s);
                     let parts = s.split(' ').collect::<Vec<&str>>();
-                    (parts[0].to_string(), parts[1].parse::<u64>().unwrap())
+                    (parts[1].to_string(), parts[0].parse::<u64>().unwrap())
                 })
                 .collect::<HashMap<String, u64>>(),
         }
@@ -115,7 +114,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Commands::Get(g) => {
             let status = db.get(&g.path)?;
-            println!("{}", serde_json::to_string(&status).unwrap());
+            println!("{}", status.branch);
+            status
+                .git_status
+                .iter()
+                .for_each(|(k, v)| println!("{} {}", v, k));
         }
     }
     Ok(())
