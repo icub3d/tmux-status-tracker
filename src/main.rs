@@ -111,10 +111,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Commands::Get(g) => {
             let status = db.get(&g.path)?;
             println!("{}", status.branch);
-            status
-                .git_status
-                .iter()
-                .for_each(|(k, v)| println!("{} {}", v, k));
+            let mut statuses = status.git_status.into_iter().collect::<Vec<_>>();
+            statuses.sort_by(|x, y| x.0.cmp(&y.0));
+            statuses.iter().for_each(|(k, v)| println!("{} {}", v, k));
         }
     }
     Ok(())
