@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::fs;
+use std::{error::Error, fs, thread, time};
 
 use clap::{Parser, Subcommand};
 use serde::{Deserialize, Serialize};
@@ -71,9 +71,20 @@ struct Database {
 }
 
 impl Database {
-    fn new(path: &str) -> Result<Database, Box<dyn std::error::Error>> {
-        let db = sled::open(path)?;
-        Ok(Database { db })
+    fn new(path: &str) -> Result<Database, Box<dyn Error>> {
+        let mut attempts = 0;
+        loop {
+            match sled::open(path) {
+                Ok(db) => return Ok(Database { db }),
+                Err(e) => {
+                    attempts += 1;
+                    if attempts > 10 {
+                        return Err(format!("failed after 10 attempts: {}", e).into());
+                    }
+                }
+            }
+            thread::sleep(time::Duration::from_millis(100))
+        }
     }
 
     fn update(self, status: Status) -> Result<(), Box<dyn std::error::Error>> {
@@ -110,15 +121,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Commands::Get(g) => {
             let status = db.get(&g.path)?;
-			let mut result = status.branch.to_string();
-			result += "  ";
+            let mut result = status.branch.to_string();
+            result += "  ";
             let mut statuses = status.git_status.into_iter().collect::<Vec<_>>();
             statuses.sort_by(|x, y| x.0.cmp(&y.0));
-			for (k, v) in statuses.iter() {
-				result += &format!("{} {}", v, k);
-				result += " ";
-			}
-			print!("{}", result);
+            for (k, v) in statuses.iter() {
+                result += &format!("{} {}", v, k);
+                result += " ";
+            }
+            print!("{}", result);
         }
     }
     Ok(())
