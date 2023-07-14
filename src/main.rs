@@ -121,7 +121,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Commands::Get(g) => {
             let status = db.get(&g.path)?;
-            let mut result = status.branch.to_string();
+            let mut result = "⎇  ".to_owned() + &status.branch.to_string();
             result += "  ";
             let mut statuses = status.git_status.into_iter().collect::<Vec<_>>();
             statuses.sort_by(|x, y| x.0.cmp(&y.0));

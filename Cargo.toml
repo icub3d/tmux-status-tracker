@@ -1,7 +1,7 @@
 [package]
 edition = "2021"
 name = "tmux-status-tracker"
-version = "2.2.0"
+version = "2.2.1"
 description = "a small cli for saving and retrieving git informatio for tmus status bars"
 license = "MIT"
 documentation = "https://github.com/icub3d/tmux-status-tracker"
